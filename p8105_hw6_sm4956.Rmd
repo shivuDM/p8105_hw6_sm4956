@@ -146,3 +146,21 @@ cities_log = homicide_ds %>%
   ungroup()
   
 ```
+
+Plotting the ORs and 95% CI for all cities, arranging in order according to the estimated ORs.
+```{r cities model plot}
+plot_cities_model = cities_log %>%
+  mutate (city_state = reorder (city_state, adj_OR)) %>%
+  ggplot(aes (y = city_state, x = adj_OR)) + 
+  geom_point() + 
+  geom_errorbar(aes(xmin = lower_95ci, xmax = upper_95ci)) + 
+  theme(legend.position = "bottom", axis.text.x = element_text( hjust = 1)) + 
+  labs (title = "Plot for OR estimates across cities and states",
+        x = "ORs with 95% CI",
+        y = "City and State")
+  
+plot_cities_model
+```
+
+By eyeballing the plot, it can be seen that **most of the cities have OR less than 1**. Cities like **Atlanta, Richmond, Nashville, Fresno, Stockton and Albuquerque have OR >= 1**. It means that the odds of solving homicide among male victims in most of the cities except for the ones stated above are less than those of solving homicides among female victims, adjusting for age and race. 
+The **95% confidence intervals for about half of the cities seem to include 1**, suggesting they are **not statistically significant**.
