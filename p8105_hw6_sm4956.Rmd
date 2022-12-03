@@ -188,3 +188,26 @@ birthweight_ds = read_csv(
 ```
 
 - The total number of observations/rows are **`r nrow(birthweight_ds)`** and the total number of variables/columns are **`r ncol(birthweight_ds)`**. The key variables in this data set are **`r colnames(birthweight_ds)`**.
+
+To develop a regression model for birthweight, I am proposing a model based on hypothesized structure of factors underlying birthweight of the baby. I discussed these factors with a friend who is practicing Gynaecology/Obstetrics, and finalized the variables accordingly. I am including the following variables in my model:
+- **babysex** : birthweight is usually determined to be higher among males than females
+- **delwt_gm** : overweight mothers can have babies with birthweight higher than the average birthweight
+- **momage** : higher the maternal age, lower can be the birthweight
+- **wtgain_gm** : higher the weight mother gained during pregnancy, higher can be the birthweight
+- **smoken** : birthweight will be lower if mother is a smoker
+
+```{r proposing regression model with hypothesizing factors underlying birth weight}
+bw_model1 = lm (bwt ~ babysex + delwt_gm + momage + wtgain_gm + smoken, data = birthweight_ds)
+```
+
+Plotting model residuals against fitted values:
+```{r plot of model residuals against fitted values}
+birthweight_ds %>%
+  add_residuals (bw_model1) %>%
+  add_predictions (bw_model1) %>%
+  ggplot(aes (x = pred, y = resid)) + 
+  geom_point () + geom_smooth(se = FALSE) +
+  labs (title = "Plot of model residuals against fitted values",
+        x = "fitted values",
+        y = "residuals")
+```
