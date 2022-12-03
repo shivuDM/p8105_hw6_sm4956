@@ -110,3 +110,22 @@ homicide_ds = read_csv(
   filter (!(city_state %in% c("Tulsa_AL","Dallas_TX", "Phoenix_AZ", "Kansas City_MO"))) %>%
   filter (!(victim_race %in% c("Asian", "Hispanic","Other", "Unknown"))) 
 ```
+
+Filtering for Baltimore city, using the glm function to fit a logistic regression with resolved vs unresolved as the outcome and victim age, sex and race as predictors. Applying broom::tidy to obtain estimate and confidence intervals for adjusted OR. Data wrangling for adj OR and 95% CI for the OR. 
+```{r}
+baltimore_homi = homicide_ds %>%
+  filter(city_state == "Baltimore_MD")
+
+  baltimore_log = baltimore_homi %>%
+  glm(solved ~ victim_age + victim_race + victim_sex, data = ., family = binomial()) %>%
+  broom::tidy() %>%
+  mutate (adj_OR = exp(estimate),
+          lower_95ci = exp(estimate - (1.96 * std.error)),
+         upper_95ci = exp(estimate + (1.96 * std.error))) %>%
+    filter (term == "victim_sexMale") %>%
+    select (adj_OR, lower_95ci, upper_95ci)
+  
+    knitr::kable((baltimore_log), digits = 3)
+```
+
+* In Baltimore, the odds of solving homicides comparing male victims to female victims are **0.426 (95% CI: 0.325,0.558)**, adjusting for age and race.
