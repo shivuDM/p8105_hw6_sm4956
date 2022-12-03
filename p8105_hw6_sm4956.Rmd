@@ -41,7 +41,7 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
-### Problem 1
+## Problem 1
 
 Obtaining the dataset for 2017 Central Park Weather data and cleaning it.
 ```{r weather_df, cache = TRUE}
@@ -164,3 +164,27 @@ plot_cities_model
 
 By eyeballing the plot, it can be seen that **most of the cities have OR less than 1**. Cities like **Atlanta, Richmond, Nashville, Fresno, Stockton and Albuquerque have OR >= 1**. It means that the odds of solving homicide among male victims in most of the cities except for the ones stated above are less than those of solving homicides among female victims, adjusting for age and race. 
 The **95% confidence intervals for about half of the cities seem to include 1**, suggesting they are **not statistically significant**.
+
+## Problem 3
+
+Obtaining dataset for birth weight of the babies from the sub-directory. Data wrangling to convert binary variables to factor form, re-coding variables as per data dictionary provided, and changing SI units to maintain uniformity across the variables. 
+```{r}
+birthweight_ds = read_csv(
+    "data/birthweight.csv") %>%
+  janitor::clean_names() %>%
+  mutate (babysex = as.factor(babysex),
+          frace = as.factor(frace),
+          mrace = as.factor(mrace),
+          malform = as.factor(malform)) %>%
+  mutate (babysex = fct_recode(babysex, "male" = "1", "female" = "2"),
+          frace = fct_recode(frace, "White" = "1", "Black" = "2", "Asian" = "3", "Puerto Rican" = "4", "Other" = "8",     "Unknown" = "9"),
+          mrace = fct_recode(mrace, "White" = "1", "Black" = "2", "Asian" = "3", "Puerto Rican" = "4", "Other" = "8"),
+          malform = fct_recode(malform, "absent" = "0", "present" = "1")) %>%
+  mutate (delwt_gm = delwt * 453.592,
+          ppwt_gm = ppwt * 453.592,
+          wtgain_gm = wtgain * 453.592,
+          mheight_cm = mheight * 2.54) %>%
+  select (-delwt, -ppwt, -wtgain, -mheight)
+```
+
+- The total number of observations/rows are **`r nrow(birthweight_ds)`** and the total number of variables/columns are **`r ncol(birthweight_ds)`**. The key variables in this data set are **`r colnames(birthweight_ds)`**.
