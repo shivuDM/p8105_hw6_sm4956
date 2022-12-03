@@ -91,3 +91,22 @@ weather_df %>%
   mutate(log_b0b1 = log(beta0 * beta1)) %>% 
   ggplot(aes(x = log_b0b1)) + geom_density()
 ```
+
+## Problem 2
+
+creating dataset for homicides. Data wrangling for: creating a new variable with city_state, creating binary variable for solved based on disposition, removing un-required states, keeping only White and Black races, converting victim_age to numeric form. 
+```{r summarizing for homicides}
+homicide_ds = read_csv(
+    "data/homicide-data.csv") %>%
+  janitor::clean_names() %>%
+  unite('city_state',"city":"state", remove = FALSE)%>%
+  select(-city,-state)%>%
+  mutate (solved = case_when (disposition == "Closed without arrest" ~ "Unresolved", 
+                              disposition == "Open/No arrest" ~ "Unresolved", 
+                              disposition == "Closed by arrest" ~ "Resolved" ),
+          solved = as.factor (solved),
+          solved = fct_relevel(solved, "Unresolved"),
+          victim_age = as.numeric(victim_age)) %>%
+  filter (!(city_state %in% c("Tulsa_AL","Dallas_TX", "Phoenix_AZ", "Kansas City_MO"))) %>%
+  filter (!(victim_race %in% c("Asian", "Hispanic","Other", "Unknown"))) 
+```
